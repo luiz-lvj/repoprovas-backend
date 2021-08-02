@@ -5,15 +5,6 @@ import Professor from "../entities/Professor";
 import Subject from "../entities/Subject";
 import Test from "../entities/Test";
 
-interface TestByProfessor{
-    tests: Test[],
-    professor: Professor
-}
-
-interface TestBySubject{
-    tests: Test[],
-    subject: Subject
-}
 
 export async function getTests(): Promise<Test[]>{
     try{
@@ -27,7 +18,7 @@ export async function getTests(): Promise<Test[]>{
     }
 }
 
-export async function getTestsByProfessor(professorId: number): Promise<TestByProfessor>{
+export async function getTestsByProfessor(professorId: number): Promise<Test[]>{
     try{
         const professor = await getRepository(Professor).findOne({
             where: {
@@ -44,16 +35,13 @@ export async function getTestsByProfessor(professorId: number): Promise<TestByPr
                 professor: professor
             }
         });
-        return {
-            professor,
-            tests
-        }
+        return tests;
     }catch{
         return null;
     }
 }
 
-export async function getTestsBySubject(subjectId: number): Promise<TestBySubject>{
+export async function getTestsBySubject(subjectId: number): Promise<Test[]>{
     try{
         const subject = await getRepository(Subject).findOne({
             where: {
@@ -70,10 +58,65 @@ export async function getTestsBySubject(subjectId: number): Promise<TestBySubjec
                 subject: subject
             }
         });
-        return {
-            subject,
-            tests
+        return tests;
+    }catch{
+        return null;
+    }
+}
+
+export async function getTestsByProfessorByCategory(professorId: number, categoryId: number): Promise<Test[]>{
+    try{
+        const professor = await getRepository(Professor).findOne({
+            where: {
+                id: professorId
+            }
+        });
+        const category = await getRepository(Category).findOne({
+            where: {
+                id: categoryId
+            }
+        });
+        if(!professor || !category){
+            return null;
         }
+        const tests = await getRepository(Test).find({
+            select: ["id", "name", "link"],
+            relations: ["category", "professor", "period", "subject"],
+            where: {
+                professor: professor,
+                category: category
+            }
+        });
+        return tests;
+    }catch{
+        return null;
+    }
+}
+
+export async function getTestsBySubjectByCategory(subjectId: number, categoryId: number): Promise<Test[]>{
+    try{
+        const subject = await getRepository(Subject).findOne({
+            where: {
+                id: subjectId
+            }
+        });
+        const category = await getRepository(Category).findOne({
+            where: {
+                id: categoryId
+            }
+        });
+        if(!subject || !category){
+            return null;
+        }
+        const tests = await getRepository(Test).find({
+            select: ["id", "name", "link"],
+            relations: ["category", "professor", "period", "subject"],
+            where: {
+                subject: subject,
+                category: category
+            }
+        });
+        return tests;
     }catch{
         return null;
     }
@@ -82,6 +125,7 @@ export async function getTestsBySubject(subjectId: number): Promise<TestBySubjec
 export async function postTest(test: any): Promise<boolean>{
     try{
         if(!isTestPost(test)){
+            console.log('aa');
             return false;
         }
         if(!isValidLink(test.link)){
@@ -99,6 +143,7 @@ export async function postTest(test: any): Promise<boolean>{
         const period:Period = await getRepository(Period).findOne({
             where: {id: test.periodId}
         });
+        console.log(professor);
         if(!professor || !subject || !category || !period){
             return false;
         }
@@ -112,7 +157,7 @@ export async function postTest(test: any): Promise<boolean>{
         });
         await getRepository(Test).save(testToSave);
         return true;
-    } catch{
+    } catch {
         return false;
     }
 }
@@ -124,13 +169,19 @@ function isValidLink(link: string): boolean{
 }
 
 function isTestPost(test: any): boolean{
-    const bool1 = test;
-    const bool2 = bool1 && test.id && typeof(test.id) == 'number';
-    const bool3 = bool2 && test.name && typeof(test.name) == 'string';
-    const bool4 = bool3 && test.link && typeof(test.link) == 'string';
-    const bool5 = bool4 && test.periodId && typeof(test.periodId) == 'number';
-    const bool6 = bool5 && test.professorId && typeof(test.professorId) == 'number';
-    const bool7 = bool6 && test.subjectId && typeof(test.subjectId) == 'number';
-    const ans = bool7 && test.categoryId && typeof(test.categoryId) == 'number';
-    return ans;
+    
+    if(!test.periodId)return false;
+    if(typeof(test.periodId) !== 'number') return false;
+    if(!test.professorId)return false;
+    if(typeof(test.professorId) !== 'number') return false;
+    if(!test.subjectId)return false;
+    if(typeof(test.subjectId) !== 'number') return false;
+    if(!test.categoryId)return false;
+    if(typeof(test.categoryId) !== 'number') return false;
+    if(!test.name) return false;
+    if(typeof(test.name) !== 'string') return false;
+    if(!test.link) return false;
+    if(typeof(test.link) !== 'string') return false;
+    
+    return true;
 }

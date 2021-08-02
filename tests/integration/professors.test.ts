@@ -6,7 +6,6 @@ import { clearDatabase } from "../utils/database";
 
 beforeAll(async () => {
     await init();
-    await clearDatabase();
 });
 
 beforeEach(async () =>{

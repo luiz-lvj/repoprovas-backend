@@ -48,9 +48,50 @@ export async function getTestsBySubject(req: Request, res: Response){
     }
 }
 
+export async function getTestsByProfessorByCategory(req: Request, res:Response){
+    try{
+        const professorId:number = parseInt(req.params.professorId);
+        const categoryId:number = parseInt(req.params.categoryId);
+        if(isNaN(professorId) || isNaN(categoryId)){
+            return res.sendStatus(400);
+        }
+        const tests = await testsService.getTestsByProfessorByCategory(professorId, categoryId);
+        if(tests == null){
+            res.status(404);
+            return res.send([]);
+        }
+        res.status(200);
+        return res.send(tests);
+
+    } catch{
+        return res.sendStatus(500);
+    }
+}
+
+export async function getTestsBySubjectByCategory(req: Request, res:Response){
+    try{
+        const subjectId:number = parseInt(req.params.subjectId);
+        const categoryId:number = parseInt(req.params.categoryId);
+        if(isNaN(subjectId) || isNaN(categoryId)){
+            return res.sendStatus(400);
+        }
+        const tests = await testsService.getTestsBySubjectByCategory(subjectId, categoryId);
+        if(tests == null){
+            res.status(404);
+            return res.send([]);
+        }
+        res.status(200);
+        return res.send(tests);
+
+    } catch{
+        return res.sendStatus(500);
+    }
+}
+
+
 export async function postTest(req: Request, res: Response){
     try{
-        const isPosted = testsService.postTest(req.body);
+        const isPosted = await testsService.postTest(req.body);
         if(!isPosted){
             return res.sendStatus(400);
         }

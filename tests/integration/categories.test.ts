@@ -7,7 +7,6 @@ import { clearDatabase } from "../utils/database";
 
 beforeAll(async () => {
     await init();
-    await clearDatabase();
 });
 
 beforeEach(async () =>{
@@ -34,4 +33,4 @@ describe("GET /categories", () => {
 
         expect(response.status).toBe(200); 
     })
-})
+});
