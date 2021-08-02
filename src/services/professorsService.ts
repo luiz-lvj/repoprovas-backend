@@ -12,7 +12,7 @@ export async function getProfessors(): Promise<Professor[]> {
     }
 }
 
-export async function getProfessorSubjects(professorId: number): Promise<any>{
+export async function getProfessorSubjects(professorId: number): Promise<Object>{
     try{
         const professor = await getRepository(Professor).findOne({
             select: ["id", "name"],

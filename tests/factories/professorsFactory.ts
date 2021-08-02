@@ -3,7 +3,7 @@ import Professor from "../../src/entities/Professor";
 import Subject from "../../src/entities/Subject";
 import { createSubject } from "./subjectsFactory";
 
-export async function createProfessor(){
+export async function createProfessor(): Promise<Professor>{
     const professor = await getRepository(Professor).create({
         name: "Professor test"
     });
