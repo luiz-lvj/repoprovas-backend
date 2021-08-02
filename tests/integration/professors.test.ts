@@ -1,11 +1,12 @@
 import supertest from "supertest";
 import { getConnection } from "typeorm";
 import app, { init } from "../../src/app";
-import { createProfessor } from "../factories/professorsFactory";
+import { createProfessor, createProfessorWithSubjects } from "../factories/professorsFactory";
 import { clearDatabase } from "../utils/database";
 
 beforeAll(async () => {
     await init();
+    await clearDatabase();
 });
 
 beforeEach(async () =>{
@@ -13,6 +14,7 @@ beforeEach(async () =>{
 });
 
 afterAll(async () =>{
+    await clearDatabase();
     await getConnection().close();
 });
 
@@ -32,4 +34,25 @@ describe("GET /professors", () =>{
         expect(response.status).toBe(200);
     });
 
-})
+});
+
+describe("GET /professors/:id/subjects", () => {
+    it("returns 200 with subjects", async () =>{
+        const professor = await createProfessorWithSubjects();
+        const response = await supertest(app).get(`/professors/${professor.id}/subjects`);
+        expect(response.body).toMatchObject({
+            id: professor.id,
+            name: professor.name,
+            subjects: professor.subjects
+        });
+        expect(response.status).toBe(200);
+    });
+    it("returns 404 for unknown professor", async () =>{
+        const response = await supertest(app).get(`/professors/1/subjects`);
+        expect(response.status).toBe(404);
+    });
+    it("returns 400 for invalid url", async () =>{
+        const response = await supertest(app).get(`/professors/anything/subjects`);
+        expect(response.status).toBe(400);
+    })
+});

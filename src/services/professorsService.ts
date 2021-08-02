@@ -11,3 +11,18 @@ export async function getProfessors(): Promise<Professor[]> {
         return [];
     }
 }
+
+export async function getProfessorSubjects(professorId: number): Promise<any>{
+    try{
+        const professor = await getRepository(Professor).findOne({
+            select: ["id", "name"],
+            where: {
+                id: professorId
+            },
+            relations: ["subjects"]
+        });
+        return professor;
+    } catch{
+        return {};
+    }
+}
