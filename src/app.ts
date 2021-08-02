@@ -9,6 +9,7 @@ import connectDatabase from "./database";
 import professorsRouter from "./routers/professorsRouter";
 import subjectsRouter from "./routers/subjectsRouter";
 import testsRouter from "./routers/testsRouter";
+import categoriesRouter from "./routers/categoriesRouter";
 
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/professors", professorsRouter);
 app.use("/subjects", subjectsRouter);
 app.use("/tests", testsRouter);
+app.use("/categories", categoriesRouter);
 
 
 export async function init () {

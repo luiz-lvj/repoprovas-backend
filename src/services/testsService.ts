@@ -5,14 +5,77 @@ import Professor from "../entities/Professor";
 import Subject from "../entities/Subject";
 import Test from "../entities/Test";
 
+interface TestByProfessor{
+    tests: Test[],
+    professor: Professor
+}
+
+interface TestBySubject{
+    tests: Test[],
+    subject: Subject
+}
+
 export async function getTests(): Promise<Test[]>{
     try{
         const tests = await getRepository(Test).find({
-            select: ["id", "name", "link", "category", "professor", "period"]
+            select: ["id", "name", "link"],
+            relations: ["category", "professor", "period", "subject"],
         });
         return tests;
     } catch{
         return [];
+    }
+}
+
+export async function getTestsByProfessor(professorId: number): Promise<TestByProfessor>{
+    try{
+        const professor = await getRepository(Professor).findOne({
+            where: {
+                id: professorId
+            }
+        });
+        if(!professor){
+            return null;
+        }
+        const tests = await getRepository(Test).find({
+            select: ["id", "name", "link"],
+            relations: ["category", "professor", "period", "subject"],
+            where: {
+                professor: professor
+            }
+        });
+        return {
+            professor,
+            tests
+        }
+    }catch{
+        return null;
+    }
+}
+
+export async function getTestsBySubject(subjectId: number): Promise<TestBySubject>{
+    try{
+        const subject = await getRepository(Subject).findOne({
+            where: {
+                id: subjectId
+            }
+        });
+        if(!subject){
+            return null;
+        }
+        const tests = await getRepository(Test).find({
+            select: ["id", "name", "link"],
+            relations: ["category", "professor", "period", "subject"],
+            where: {
+                subject: subject
+            }
+        });
+        return {
+            subject,
+            tests
+        }
+    }catch{
+        return null;
     }
 }
 
