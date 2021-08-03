@@ -10,6 +10,7 @@ import professorsRouter from "./routers/professorsRouter";
 import subjectsRouter from "./routers/subjectsRouter";
 import testsRouter from "./routers/testsRouter";
 import categoriesRouter from "./routers/categoriesRouter";
+import periodsRouter from "./routers/periodsRouter";
 
 
 const app = express();
@@ -20,6 +21,7 @@ app.use("/professors", professorsRouter);
 app.use("/subjects", subjectsRouter);
 app.use("/tests", testsRouter);
 app.use("/categories", categoriesRouter);
+app.use("/periods", periodsRouter);
 
 
 
