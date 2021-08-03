@@ -2,6 +2,7 @@ import supertest from "supertest";
 import { getConnection } from "typeorm";
 import app, { init } from "../../src/app";
 import { createSubject, createSubjectWithProfessors } from "../factories/subjectsFactory";
+import { createTestWithSubject } from "../factories/testsFactory";
 import { clearDatabase } from "../utils/database";
 
 beforeAll(async () => {
@@ -24,11 +25,26 @@ describe("GET /subjects", () =>{
         expect(response.body).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    name: subject.name
+                    name: subject.name,
+                    tests: 0
                 })
             ])
         );
         expect(response.status).toBe(200);
+    });
+    it("returns 200 with number of tests", async () => {
+        const subject = await createSubject();
+        await createTestWithSubject(subject);
+        await createTestWithSubject(subject);
+        const response = await supertest(app).get("/subjects");
+        expect(response.body).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    name: subject.name,
+                    tests: 2
+                })
+            ])
+        );
     });
 
 });

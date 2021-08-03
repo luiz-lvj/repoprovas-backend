@@ -125,7 +125,6 @@ export async function getTestsBySubjectByCategory(subjectId: number, categoryId:
 export async function postTest(test: any): Promise<boolean>{
     try{
         if(!isTestPost(test)){
-            console.log('aa');
             return false;
         }
         if(!isValidLink(test.link)){
@@ -143,7 +142,6 @@ export async function postTest(test: any): Promise<boolean>{
         const period:Period = await getRepository(Period).findOne({
             where: {id: test.periodId}
         });
-        console.log(professor);
         if(!professor || !subject || !category || !period){
             return false;
         }
