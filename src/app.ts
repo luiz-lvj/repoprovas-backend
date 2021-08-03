@@ -10,7 +10,6 @@ import professorsRouter from "./routers/professorsRouter";
 import subjectsRouter from "./routers/subjectsRouter";
 import testsRouter from "./routers/testsRouter";
 import categoriesRouter from "./routers/categoriesRouter";
-import { seedDb } from "./seed_database/seedDb";
 
 
 const app = express();
